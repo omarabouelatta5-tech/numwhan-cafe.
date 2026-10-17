@@ -69,6 +69,15 @@ header{display:flex;align-items:center;justify-content:space-between;padding:20p
 .info .th{font-size:14px;color:var(--gold2);font-weight:500}
 .info .desc{font-size:13px;line-height:1.4;color:var(--muted)}
 .row{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.var{display:flex;align-items:center;gap:10px;margin-top:6px}
+.var .vlab{font-size:13px;color:var(--muted);min-width:44px}
+.var .price{flex:1}
+.contact{margin:22px 0 0;padding:18px;border-radius:22px;background:var(--card);border:1px solid var(--line);text-align:center}
+.contact h2{margin:0 0 4px;font-size:20px}
+.contact p{margin:0 0 12px;color:var(--muted);font-size:14px}
+.contact .num{font-family:Mitr,sans-serif;font-size:24px;font-weight:600;color:var(--head);letter-spacing:.04em;display:block;margin-bottom:12px}
+.contact .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn.line{background:#06C755;color:#fff}
 .price{font-family:Mitr,sans-serif;font-size:17px;font-weight:600;color:var(--head)}
 .add{width:44px;height:44px;border:0;border-radius:50%;background:var(--gold);display:grid;place-items:center;cursor:pointer}
 .stepper{display:flex;align-items:center;gap:4px;padding:2px;border-radius:999px;background:rgba(246,234,219,.1)}
@@ -165,6 +174,15 @@ pre.msg{white-space:pre-wrap;font-family:inherit;font-size:15px;background:var(-
       <nav class="cats" id="cats" aria-label="Menu categories"></nav>
       <div class="grid" id="grid"></div>
     </main>
+    <section class="contact" id="contact">
+      <h2 data-i18n="contactTitle"></h2>
+      <p data-i18n="contactSub"></p>
+      <span class="num">LINE: 062-225-5072</span>
+      <div class="btns">
+        <a class="btn line" id="lineAdd" href="https://line.me/ti/p/~0622255072" target="_blank" rel="noopener"><span data-i18n="addLine"></span></a>
+        <a class="btn ghost" href="tel:0622255072"><span data-i18n="callUs"></span></a>
+      </div>
+    </section>
     <footer data-i18n="footer"></footer>
   </div>
 </div>
@@ -220,11 +238,12 @@ pre.msg{white-space:pre-wrap;font-family:inherit;font-size:15px;background:var(-
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A0F07" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
           <span data-i18n="prepare"></span></button>
         <p class="note" data-i18n="confirmNote"></p>
+        <p class="note">LINE: 062-225-5072</p>
       </form>
     </div>
 
     <div id="msgView" hidden>
-      <p style="margin:14px 0 0;color:var(--muted)" data-i18n="msgIntro"></p>
+      <p style="margin:14px 0 0;color:var(--muted)"><span data-i18n="msgIntro"></span> — LINE: <b style="color:var(--head)">062-225-5072</b></p>
       <pre class="msg" id="msgText"></pre>
       <div class="actions">
         <button class="btn" type="button" id="copyMsg"><span data-i18n="copy"></span></button>
@@ -240,29 +259,43 @@ pre.msg{white-space:pre-wrap;font-family:inherit;font-size:15px;background:var(-
 <script>
 /* ============================================================
    MENU — عدّل الأصناف والأسعار من هنا
-   price: اكتب السعر بالبات (مثلاً 55). لو سبته null هيظهر "—"
+   ice = سعر البارد، hot = سعر السخن (بالبات). null = مش متاح
    ============================================================ */
 const MENU = [
-  { id:'thaitea',   cat:'tea',    en:'Thai Milk Tea',          th:'ชาไทย',        descEn:'Strong-brewed, creamy, a classic.',      descTh:'ชาไทยเข้มข้น หอมมัน',         price:null, color:'#D9772B', top:'#F3E3CC', cup:true },
-  { id:'greentea',  cat:'tea',    en:'Thai Green Milk Tea',    th:'ชาเขียวนม',    descEn:'Fragrant, smooth and mellow.',           descTh:'หอม นุ่ม ละมุน',              price:null, color:'#9DB86A', top:'#EEF0DA', cup:true },
-  { id:'matcha',    cat:'tea',    en:'Matcha Latte',           th:'มัทฉะลาเต้',   descEn:'Ceremonial-style matcha over milk.',     descTh:'มัทฉะเข้มข้นกับนมสด',          price:null, color:'#5E8C4A', top:'#F2EFE3', cup:true },
-  { id:'cocoa',     cat:'cafe',   en:'Iced Cocoa',             th:'โกโก้เย็น',    descEn:'Rich chocolate, as sweet as you like.',  descTh:'โกโก้เข้มข้น หวานได้ตามใจ',     price:null, color:'#7A4A33', top:'#E9D6C4', cup:true },
-  { id:'latte',     cat:'cafe',   en:'Iced Latte',             th:'ลาเต้เย็น',    descEn:'Espresso, cold milk, ice.',              descTh:'เอสเพรสโซ่ นมสด น้ำแข็ง',       price:null, color:'#B88762', top:'#F3E7D8', cup:true },
-  { id:'butterfly', cat:'fresh',  en:'Butterfly Pea Lemonade', th:'อัญชันมะนาว',  descEn:'Blue-to-purple, bright and zesty.',      descTh:'สดชื่น เปรี้ยวหวาน',            price:null, color:'#6E66C9', top:'#B5D4F0', cup:true },
-  { id:'honeytoast',cat:'sweets', en:'Honey Butter Toast',     th:'ฮันนี่โทสต์',  descEn:'Thick toast, butter, honey, ice cream.', descTh:'ขนมปังหนานุ่ม เนย น้ำผึ้ง ไอศกรีม', price:null, color:'#E7B66A', top:'#FFF6E8', cup:false },
-  { id:'bingsu',    cat:'sweets', en:'Thai Tea Bingsu',        th:'บิงซูชาไทย',   descEn:'Snow ice with Thai tea and cream.',      descTh:'บิงซูเกล็ดหิมะรสชาไทย',         price:null, color:'#F0C9A0', top:'#D9772B', cup:false }
+  { id:'americano', cat:'coffee', en:'Americano', th:'อเมริกาโน่', ice:45, hot:40, color:'#3B2416', top:'#6B4A33', cup:true },
+  { id:'honeyamericano', cat:'coffee', en:'Honey Americano', th:'อเมริกาโน่ น้ำผึ้ง', ice:50, hot:45, color:'#4A2C17', top:'#E7B66A', cup:true },
+  { id:'cocoamericano', cat:'coffee', en:'Coconut Americano', th:'อเมริกาโน่ น้ำมะพร้าว', ice:50, hot:null, color:'#4A2E1C', top:'#F2EDE4', cup:true },
+  { id:'cappuccino', cat:'coffee', en:'Cappuccino', th:'คาปูชิโน่', ice:50, hot:45, color:'#A87A55', top:'#F3E7D8', cup:true },
+  { id:'esyen', cat:'coffee', en:'Thai Iced Espresso (Es Yen)', th:'เอสเย็น', ice:50, hot:null, color:'#B07A4F', top:'#F0DFC8', cup:true },
+  { id:'latte', cat:'coffee', en:'Latte', th:'ลาเต้', ice:50, hot:45, color:'#B88762', top:'#F3E7D8', cup:true },
+  { id:'spanishlatte', cat:'coffee', en:'Spanish Latte', th:'ลาเต้สเปน', ice:50, hot:null, color:'#C4936A', top:'#F6E6CF', cup:true },
+  { id:'mocha', cat:'coffee', en:'Mocha', th:'มอคค่า', ice:55, hot:50, color:'#6B3F2A', top:'#E9D6C4', cup:true },
+  { id:'espresso', cat:'coffee', en:'Espresso Shot', th:'ช็อตเอสเปรซโซ่', ice:null, hot:45, color:'#2A170C', top:'#8A5A3A', cup:true },
+  { id:'caramelmac', cat:'coffee', en:'Caramel Macchiato', th:'คาราเมล มัคคิอาโต้', ice:55, hot:50, color:'#C98B4A', top:'#F6E3C6', cup:true },
+  { id:'matcha', cat:'noncoffee', en:'Matcha', th:'มัทฉะ', ice:45, hot:40, color:'#4F7F3C', top:'#DDE8C8', cup:true },
+  { id:'matchalatte', cat:'noncoffee', en:'Matcha Latte', th:'มัทฉะลาเต้', ice:50, hot:45, color:'#5E8C4A', top:'#F2EFE3', cup:true },
+  { id:'matchacoco', cat:'noncoffee', en:'Coconut Matcha', th:'มัทฉะ น้ำมะพร้าว', ice:50, hot:null, color:'#6E9A55', top:'#F4F1E6', cup:true },
+  { id:'matchastraw', cat:'noncoffee', en:'Strawberry Matcha', th:'มัทฉะ สตรอว์เบอร์รี่', ice:50, hot:null, color:'#5E8C4A', top:'#E8738A', cup:true },
+  { id:'greentea', cat:'noncoffee', en:'Green Tea', th:'ชาเขียว', ice:45, hot:40, color:'#9DB86A', top:'#EEF0DA', cup:true },
+  { id:'thaitea', cat:'noncoffee', en:'Thai Tea', th:'ชาไทย', ice:45, hot:40, color:'#D9772B', top:'#F3E3CC', cup:true },
+  { id:'pinkmilk', cat:'noncoffee', en:'Pink Milk', th:'นมชมพู', ice:45, hot:40, color:'#F09BB3', top:'#FCE3EA', cup:true },
+  { id:'caramelmilk', cat:'noncoffee', en:'Caramel Milk', th:'นมคาราเมล', ice:50, hot:45, color:'#D9A66A', top:'#F8EAD6', cup:true },
+  { id:'butterflymilk', cat:'noncoffee', en:'Butterfly Pea Milk', th:'นมดอกอัญชัน', ice:50, hot:null, color:'#6E66C9', top:'#E6E2F6', cup:true },
+  { id:'cocoa', cat:'noncoffee', en:'Cocoa', th:'โกโก้', ice:50, hot:45, color:'#7A4A33', top:'#E9D6C4', cup:true },
+  { id:'strawcocoa', cat:'noncoffee', en:'Strawberry Cocoa', th:'โกโก้ สตรอว์เบอร์รี่', ice:50, hot:45, color:'#7A4A33', top:'#E8738A', cup:true },
+  { id:'strawlatte', cat:'noncoffee', en:'Strawberry Latte', th:'สตอเบอร์รี่ลาเต้', ice:50, hot:45, color:'#E8738A', top:'#FBE1E6', cup:true }
 ];
 const CATS = [
-  { id:'all', en:'All', th:'ทั้งหมด' }, { id:'tea', en:'Tea', th:'ชา' }, { id:'cafe', en:'Café', th:'กาแฟ' },
-  { id:'fresh', en:'Refreshers', th:'เครื่องดื่มสดชื่น' }, { id:'sweets', en:'Sweets', th:'ขนม' }
+  { id:'all', en:'All', th:'ทั้งหมด' }, { id:'coffee', en:'Coffee', th:'กาแฟ' }, { id:'noncoffee', en:'Non Coffee', th:'ไม่ใช่กาแฟ' }
 ];
 /* LINE Official Account ID (اختياري) — مثلاً '@numwhan'. لو فاضي، زرار LINE بيفتح مشاركة عادية */
 const LINE_OA = '';
+const LINE_CONTACT = '0622255072';
 
 const T = {
   th:{ eyebrow:'ชงสดใหม่ · FRESHLY BREWED', headline:'ความหวานเล็กๆ ในทุกจิบ', sub:'A little sweetness in every sip — สั่งล่วงหน้า แล้วมารับได้เลย',
-       orderNow:'สั่งเลย', perks:'ทำสดตามออเดอร์<br>เลือกน้ำแข็งและความหวานได้', ourMenu:'เมนูของเรา', findFav:'ค้นหาเมนูโปรดของคุณ',
-       footer:'ทำด้วยใจ · Made with care', yourOrder:'ออเดอร์ของคุณ', viewOrder:'ดูออเดอร์', items:'รายการ', addSome:'เลือกของหวานกันเลย',
+       orderNow:'สั่งเลย', perks:'ทำสดตามออเดอร์<br>LINE: 062-225-5072', ourMenu:'เมนูของเรา', findFav:'ค้นหาเมนูโปรดของคุณ',
+       footer:'NUMWHAN SWEET CAFE · ทำด้วยใจ', iced:'เย็น', hotL:'ร้อน', contactTitle:'ติดต่อเรา', contactSub:'สั่งเครื่องดื่มหรือสอบถามทาง LINE ได้เลย', addLine:'เพิ่มเพื่อน LINE', callUs:'โทรหาเรา', yourOrder:'ออเดอร์ของคุณ', viewOrder:'ดูออเดอร์', items:'รายการ', addSome:'เลือกของหวานกันเลย',
        name:'ชื่อ', contact:'เบอร์โทร หรือ LINE ID', orderType:'รูปแบบการรับ', pickup:'รับเอง', delivery:'จัดส่ง',
        deliveryNote:'การจัดส่งจะยืนยันกับทางร้านอีกครั้ง', time:'เวลารับ', sweetness:'ระดับความหวาน', ice:'น้ำแข็ง',
        iceN:'ปกติ', iceL:'น้อย', iceE:'เพิ่ม', ice0:'ไม่ใส่', notes:'หมายเหตุ', prepare:'เตรียมข้อความสั่งซื้อ',
@@ -270,8 +303,8 @@ const T = {
        errName:'กรุณากรอกชื่อ', errEmpty:'กรุณาเลือกเมนูอย่างน้อย 1 รายการ', msgIntro:'คัดลอกข้อความนี้แล้วส่งให้ร้าน',
        copy:'คัดลอก', sendLine:'ส่งทาง LINE', edit:'แก้ไขออเดอร์', copied:'คัดลอกแล้ว', add:'เพิ่ม', remove:'ลด' },
   en:{ eyebrow:'FRESHLY BREWED · ชงสดใหม่', headline:'A little sweetness in every sip.', sub:'ความหวานเล็กๆ ในทุกจิบ — order ahead, pick up fresh.',
-       orderNow:'Order now', perks:'Made to order<br>Your ice &amp; sweetness', ourMenu:'Our menu', findFav:'Find your new favourite',
-       footer:'Made with care · ทำด้วยใจ', yourOrder:'Your order', viewOrder:'View order', items:'items', addSome:'Add something sweet',
+       orderNow:'Order now', perks:'Made to order<br>LINE: 062-225-5072', ourMenu:'Our menu', findFav:'Find your new favourite',
+       footer:'NUMWHAN SWEET CAFE · Made with care', iced:'Iced', hotL:'Hot', contactTitle:'Contact us', contactSub:'Order or ask us anything on LINE', addLine:'Add us on LINE', callUs:'Call us', yourOrder:'Your order', viewOrder:'View order', items:'items', addSome:'Add something sweet',
        name:'Name', contact:'Phone or LINE ID', orderType:'Order type', pickup:'Pickup', delivery:'Delivery',
        deliveryNote:'Delivery is confirmed with the café after you send your order.', time:'Pickup time', sweetness:'Sweetness', ice:'Ice',
        iceN:'Normal', iceL:'Less', iceE:'Extra', ice0:'No ice', notes:'Notes', prepare:'Prepare order message',
@@ -297,6 +330,14 @@ const plusSVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" str
 const minusSVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6EADB" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>';
 
 function nameOf(i){ return state.lang === 'th' ? i.th : i.en; }
+/* each drink can be ordered iced/hot: qty keys are "id|ice" and "id|hot" */
+const VARS = ['ice','hot'];
+function lines(){
+  const out = [];
+  for (const i of MENU) for (const v of VARS){ const q = state.qty[i.id + '|' + v] || 0; if (q && i[v] != null) out.push({ i, v, q, price:i[v] }); }
+  return out;
+}
+const vLabel = (v, lang) => T[lang || state.lang][v === 'ice' ? 'iced' : 'hotL'];
 
 function renderI18n(){
   document.documentElement.lang = state.lang;
@@ -313,26 +354,29 @@ function renderCats(){
 function renderGrid(){
   const list = MENU.filter((i) => state.cat === 'all' || i.cat === state.cat);
   $('#grid').innerHTML = list.map((i) => {
-    const q = state.qty[i.id] || 0;
     const primary = state.lang === 'th' ? i.th : i.en, secondary = state.lang === 'th' ? i.en : i.th;
-    const ctrl = q === 0
-      ? `<button class="add" type="button" data-inc="${i.id}" aria-label="${esc(t('add') + ' ' + primary)}">${plusSVG}</button>`
-      : `<div class="stepper"><button type="button" data-dec="${i.id}" aria-label="${esc(t('remove') + ' ' + primary)}">${minusSVG}</button><span>${q}</span><button class="plus" type="button" data-inc="${i.id}" aria-label="${esc(t('add') + ' ' + primary)}">${plusSVG.replace('20','18').replace('20','18')}</button></div>`;
-    return `<article class="item"><div class="thumb">${cupSVG(i)}</div><div class="info"><h3>${esc(primary)}</h3><span class="th">${esc(secondary)}</span><span class="desc">${esc(state.lang === 'th' ? i.descTh : i.descEn)}</span><div class="row"><span class="price">${fmt(i.price)}</span>${ctrl}</div></div></article>`;
+    const rows = VARS.filter((v) => i[v] != null).map((v) => {
+      const key = i.id + '|' + v, q = state.qty[key] || 0, lab = primary + ' (' + vLabel(v) + ')';
+      const ctrl = q === 0
+        ? `<button class="add" type="button" data-inc="${key}" aria-label="${esc(t('add') + ' ' + lab)}">${plusSVG}</button>`
+        : `<div class="stepper"><button type="button" data-dec="${key}" aria-label="${esc(t('remove') + ' ' + lab)}">${minusSVG}</button><span>${q}</span><button class="plus" type="button" data-inc="${key}" aria-label="${esc(t('add') + ' ' + lab)}">${plusSVG.replace('20','18').replace('20','18')}</button></div>`;
+      return `<div class="var"><span class="vlab">${esc(vLabel(v))}</span><span class="price">${fmt(i[v])}</span>${ctrl}</div>`;
+    }).join('');
+    return `<article class="item"><div class="thumb">${cupSVG(i)}</div><div class="info"><h3>${esc(primary)}</h3><span class="th">${esc(secondary)}</span>${rows}</div></article>`;
   }).join('');
 }
 function totals(){
-  let count = 0, sum = 0, priced = true;
-  for (const i of MENU){ const q = state.qty[i.id] || 0; if (!q) continue; count += q; if (i.price == null) priced = false; else sum += i.price * q; }
-  return { count, sum, priced };
+  let count = 0, sum = 0;
+  for (const l of lines()){ count += l.q; sum += l.price * l.q; }
+  return { count, sum, priced:true };
 }
 function renderBar(){
   const { count, sum, priced } = totals();
   $('#barCount').textContent = count === 0 ? t('addSome') : `${count} ${t('items')} · ${priced ? '฿' + sum : '฿ —'}`;
 }
 function renderSummary(){
-  const rows = MENU.filter((i) => state.qty[i.id]).map((i) =>
-    `<div class="line"><div><b>${state.qty[i.id]} × ${esc(nameOf(i))}</b><em>${esc(state.lang === 'th' ? i.en : i.th)}</em></div><span class="display">${i.price == null ? '฿ —' : '฿' + i.price * state.qty[i.id]}</span></div>`).join('');
+  const rows = lines().map((l) =>
+    `<div class="line"><div><b>${l.q} × ${esc(nameOf(l.i))} (${esc(vLabel(l.v))})</b><em>${esc(state.lang === 'th' ? l.i.en : l.i.th)}</em></div><span class="display">฿${l.price * l.q}</span></div>`).join('');
   const { sum, priced } = totals();
   $('#summary').innerHTML = rows
     ? rows + `<div class="total"><span>${t('total')}</span><span>${priced ? '฿' + sum : '฿ —'}</span></div>`
@@ -369,12 +413,12 @@ function buildMessage(){
   const L = state.lang === 'th';
   const sweetTxt = state.sweet + '%';
   const iceTxt = t({ N:'iceN', L:'iceL', E:'iceE', 0:'ice0' }[state.ice]);
-  const lines = MENU.filter((i) => state.qty[i.id]).map((i) =>
-    `• ${state.qty[i.id]} × ${i.th} / ${i.en}${i.price != null ? ' — ฿' + i.price * state.qty[i.id] : ''}`);
+  const items = lines().map((l) =>
+    `• ${l.q} × ${l.i.th} (${vLabel(l.v, 'th')}) / ${l.i.en} (${vLabel(l.v, 'en')}) — ฿${l.price * l.q}`);
   const { sum, priced } = totals();
   const out = [
     'NUMWHAN SWEET CAFÉ — ' + (L ? 'ออเดอร์ใหม่' : 'New order'), '',
-    ...lines,
+    ...items,
     priced ? `${t('total')}: ฿${sum}` : '', '',
     `${t('name')}: ${$('#fName').value.trim()}`,
     $('#fContact').value.trim() ? `${t('contact')}: ${$('#fContact').value.trim()}` : '',
