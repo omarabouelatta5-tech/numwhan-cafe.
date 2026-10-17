@@ -306,7 +306,9 @@ pre.msg{white-space:pre-wrap;font-family:inherit;font-size:14px;background:var(-
     <div id="vDone" hidden>
       <div class="done-ic"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
       <p class="ordno">หมายเลขออเดอร์<b id="ordNo">—</b></p>
-      <p class="note" style="margin-top:8px">กดปุ่มด้านล่าง ระบบจะเปิดแชท LINE ของร้านพร้อมข้อความออเดอร์ แล้วกด "ส่ง" ร้านจะยืนยันออเดอร์กับคุณ</p>
+      <p class="note" id="doneOk" style="margin-top:8px;font-size:16px;color:var(--head)">✅ ร้านได้รับออเดอร์ของคุณแล้ว ร้านจะเริ่มเตรียมเครื่องดื่มและติดต่อกลับหากมีข้อสงสัย</p>
+      <p class="note" id="slipNote" style="margin-top:6px" hidden>ชำระแบบโอน: กรุณาส่งสลิปให้ร้านทาง LINE</p>
+      <p class="note" id="doneFail" style="margin-top:8px;color:#F3A98C" hidden>ส่งออเดอร์อัตโนมัติไม่สำเร็จ (อินเทอร์เน็ตขัดข้อง) กรุณากดปุ่มด้านล่างเพื่อส่งออเดอร์ทาง LINE</p>
       <pre class="msg" id="msgText"></pre>
       <div class="actions">
         <a class="btn line wide" id="sendLine" href="#" target="_blank" rel="noopener">ส่งออเดอร์ทาง LINE</a>
@@ -571,7 +573,10 @@ $('#toCheckout').addEventListener('click', () => { if (totals().count) show(2); 
 $('#backCart').addEventListener('click', () => show(1));
 
 function orderNo(){ const d = new Date(); const p = (n) => String(n).padStart(2, '0'); return 'NW' + p(d.getDate()) + p(d.getHours()) + p(d.getMinutes()) + Math.floor(Math.random() * 90 + 10); }
-$('#placeOrder').addEventListener('click', () => {
+const ORDER_API = 'https://script.google.com/macros/s/AKfycbwDL-SFkAkwfQOizqLAzKu9rgyPKc0HsMCeDujGayKi1qzPaaxRBV84ioj3tpL7Z33C/exec';
+let sending = false;
+$('#placeOrder').addEventListener('click', async () => {
+  if (sending) return;
   const err = $('#err'), name = $('#fName').value.trim(), phone = $('#fPhone').value.trim();
   if (!totals().count){ err.textContent = 'ตะกร้ายังว่างอยู่'; return; }
   if (!name){ err.textContent = 'กรุณากรอกชื่อ'; $('#fName').focus(); return; }
@@ -591,9 +596,28 @@ $('#placeOrder').addEventListener('click', () => {
   if ($('#fNotes').value.trim()) out.push(`หมายเหตุ: ${$('#fNotes').value.trim()}`);
   out.push(`ชำระเงิน: ${state.pay === 'transfer' ? 'โอนเงิน / สแกน QR (จะส่งสลิปตามมา)' : 'เงินสด'}`);
   const msg = out.join('\n');
+  const payload = {
+    type:'order', no, total:sum, message:msg, name, phone,
+    items: lines().map((l) => ({ name:l.d.th, variant:VL[l.v], qty:l.q, total:l.q * l.price })),
+    typeLabel: state.type === 'takeaway' ? 'สั่งด่วน รับกลับบ้าน' : 'ทานที่ร้าน',
+    when: state.type === 'takeaway' ? $('#fTime').value : $('#fTable').value.trim(),
+    sweet: state.sweet + '%', notes: $('#fNotes').value.trim(),
+    payLabel: state.pay === 'transfer' ? 'โอนเงิน / สแกน QR' : 'เงินสด'
+  };
+  const btn = $('#placeOrder'); sending = true; btn.disabled = true; btn.textContent = 'กำลังส่งออเดอร์ถึงร้าน...';
+  let ok = false;
+  try {
+    await fetch(ORDER_API, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+    ok = true;
+  } catch(e) { ok = false; }
+  sending = false; btn.disabled = false; btn.textContent = 'ยืนยันการสั่งซื้อ';
   $('#ordNo').textContent = '#' + no; $('#msgText').textContent = msg;
   const enc = encodeURIComponent(msg);
   $('#sendLine').href = LINE_OA ? `https://line.me/R/oaMessage/${LINE_OA}/?${enc}` : `https://line.me/R/msg/text/?${enc}`;
+  $('#doneOk').hidden = !ok; $('#doneFail').hidden = ok;
+  $('#sendLine').textContent = ok ? (state.pay === 'transfer' ? 'ส่งสลิปโอนเงินทาง LINE' : 'แชทกับร้านทาง LINE') : 'ส่งออเดอร์ทาง LINE';
+  $('#slipNote').hidden = !(ok && state.pay === 'transfer');
+  if (ok){ state.qty = {}; refresh(); }
   show(3);
 });
 $('#copyMsg').addEventListener('click', async () => {
