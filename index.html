@@ -143,6 +143,13 @@ textarea.input{height:auto;padding:14px 16px;resize:vertical}
 .qrbox img{width:min(240px,70vw);height:auto;display:block;margin:0 auto}
 .qrbox .amt{font-family:Mitr,sans-serif;font-size:26px;font-weight:600;margin:6px 0 0}
 .pp-head{background:#0E3D6B;color:#fff;font-weight:600;border-radius:12px;padding:8px;margin:-4px -4px 12px;font-size:15px}
+.qrtip{font-size:13px!important;color:#6B5640!important;margin:8px 0 0!important}
+.ppcopy{margin-top:14px;padding:12px;border-radius:14px;background:#F6EFE5;text-align:left}
+.pptitle{font-weight:600;font-size:14px;margin-bottom:8px;color:#1A0F07}
+.pprow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px dashed #D9C6AE}
+.pprow span{font-size:13px;color:#6B5640}
+.pprow b{display:block;font-family:Mitr,sans-serif;font-size:20px;color:#1A0F07}
+.btn.ghost2{min-height:42px;padding:0 14px;font-size:14px;background:#0E3D6B;color:#fff;border-radius:12px}
 .qrbox p{margin:4px 0 0;font-size:14px;color:#5A4632}
 .paycash{margin-top:10px;padding:14px;border-radius:18px;background:rgba(246,234,219,.07);border:1px dashed var(--line2);font-size:14px;color:#E9D9C4;text-align:center}
 .done-ic{width:72px;height:72px;margin:10px auto 6px;border-radius:50%;background:var(--green);display:grid;place-items:center}
@@ -290,7 +297,14 @@ pre.msg{white-space:pre-wrap;font-family:inherit;font-size:14px;background:var(-
               <p>ยอดที่ต้องชำระ</p>
               <div class="amt" id="qrAmt">฿0</div>
               <p id="qrHint">สแกนด้วยแอปธนาคาร ยอดเงินจะขึ้นอัตโนมัติ<br>โอนแล้วกรุณาส่งสลิปทาง LINE · พร้อมเพย์ 062-225-5072</p>
-              <a class="btn" id="qrSave" href="#" download="numwhan-promptpay.png" style="margin-top:12px;width:100%">บันทึกรูป QR ไปสแกนในแอปธนาคาร</a>
+              <button class="btn" type="button" id="qrSave" style="margin-top:12px;width:100%">📥 บันทึกรูป QR ลงอัลบั้มรูป</button>
+              <p class="qrtip">หรือ <b>กดค้างที่รูป QR</b> แล้วเลือก "บันทึกรูปภาพ" → เปิดแอปธนาคาร → สแกน → เลือกรูปจากอัลบั้ม</p>
+              <div class="ppcopy">
+                <div class="pptitle">หรือโอนด้วยเบอร์พร้อมเพย์ (ไม่ต้องใช้ QR)</div>
+                <div class="pprow"><span>พร้อมเพย์<b>062-225-5072</b></span><button type="button" class="btn ghost2" id="copyPP">คัดลอกเบอร์</button></div>
+                <div class="pprow"><span>ยอดเงิน<b id="ppAmt">฿0</b></span><button type="button" class="btn ghost2" id="copyAmt">คัดลอกยอด</button></div>
+                <p class="qrtip">เปิดแอปธนาคาร → โอนเงิน → พร้อมเพย์ → วางเบอร์ → วางยอดเงิน → ยืนยัน</p>
+              </div>
             </div>
           </div>
           <div id="payCash" class="paycash" hidden>ชำระเงินสดที่เคาน์เตอร์ตอนรับเครื่องดื่ม</div>
@@ -620,6 +634,19 @@ $('#placeOrder').addEventListener('click', async () => {
   if (ok){ state.qty = {}; refresh(); }
   show(3);
 });
+async function copyText(t){ try { await navigator.clipboard.writeText(t); return true; } catch(e){ const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(_){} ta.remove(); return true; } }
+$('#copyPP').addEventListener('click', async () => { await copyText('0622255072'); toast('คัดลอกเบอร์พร้อมเพย์แล้ว'); });
+$('#copyAmt').addEventListener('click', async () => { await copyText(String(totals().sum)); toast('คัดลอกยอดเงินแล้ว'); });
+$('#qrSave').addEventListener('click', async () => {
+  const url = window.__qrUrl || $('#qrImg').src;
+  try {
+    const blob = await (await fetch(url)).blob();
+    const file = new File([blob], 'numwhan-promptpay.png', { type: blob.type || 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files:[file] })) { await navigator.share({ files:[file], title:'QR พร้อมเพย์ NUMWHAN' }); return; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'numwhan-promptpay.png'; document.body.appendChild(a); a.click(); a.remove();
+    toast('บันทึกรูปแล้ว');
+  } catch(e) { if (e && e.name === 'AbortError') return; toast('กดค้างที่รูป QR เพื่อบันทึก'); }
+});
 $('#copyMsg').addEventListener('click', async () => {
   const text = $('#msgText').textContent;
   try { await navigator.clipboard.writeText(text); }
@@ -637,7 +664,8 @@ function ppPayload(amount){
   return p + crc16(p);
 }
 function renderQR(amount){
-  const img = $('#qrImg'), save = $('#qrSave');
+  const img = $('#qrImg'), save = { set href(v){ window.__qrUrl = v; } };
+  $('#ppAmt').textContent = '฿' + amount;
   if (typeof qrcode !== 'function'){ save.href = img.src; $('#qrHint').innerHTML = 'สแกนแล้วกรอกยอดเงินให้ตรงกับยอดด้านบน<br>โอนแล้วกรุณาส่งสลิปทาง LINE · พร้อมเพย์ 062-225-5072'; return; }
   try {
     const q = qrcode(0, 'M'); q.addData(ppPayload(amount)); q.make();
