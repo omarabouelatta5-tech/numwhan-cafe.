@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#315849">
+<title>NUMWHAN SWEET CAFÉ | Menu & Order</title>
+<style>
+:root{--green:#315849;--green2:#476d5a;--cream:#fbf7ee;--paper:#fffdf8;--ink:#25342c;--muted:#6c786f;--peach:#e9b78c;--line:#e8e2d6}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.hero{background:var(--green);color:#fff;padding:28px 18px 32px;border-radius:0 0 28px 28px}
+.wrap{width:min(1080px,100% - 32px);margin:auto}.top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#e9d9b9;font-weight:800}
+.lang{border:1px solid #ffffff60;background:#ffffff12;color:white;border-radius:999px;padding:8px 12px}
+h1{font-family:Georgia,serif;font-size:clamp(34px,6vw,58px);line-height:1.02;letter-spacing:-.04em;margin:25px 0 10px}
+.hero p{color:#e0e9df;max-width:520px;margin:0;line-height:1.6}
+.hero-bottom{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}.pill{background:#ffffff15;border:1px solid #ffffff35;padding:8px 12px;border-radius:999px;font-size:13px}
+main{padding:24px 0 110px}.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:4px 0 20px}
+.search{flex:1;min-width:180px;background:white;border:1px solid var(--line);border-radius:13px;padding:13px 14px;outline-color:var(--green)}
+.categories{display:flex;gap:8px;overflow:auto;padding:2px 0 10px;scrollbar-width:thin}.cat{white-space:nowrap;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 14px;color:var(--green);font-weight:650}.cat.active{background:var(--green);color:white;border-color:var(--green)}
+.section-title{display:flex;justify-content:space-between;align-items:end;margin:18px 0 14px}.section-title h2{font: bold 28px Georgia,serif;margin:0}.section-title span{font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.item{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.item-art{height:150px;display:grid;place-items:center;background:linear-gradient(135deg,#eee2ca,#f7eee0);font-size:66px;position:relative}
+.item-art .tag{position:absolute;top:11px;left:11px;font-size:11px;font-weight:800;background:#fffdf0dd;border-radius:999px;padding:6px 9px;color:var(--green)}
+.item-info{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}.item h3{font-size:16px;margin:0}.desc{font-size:12px;color:var(--muted);line-height:1.45;min-height:34px}.item-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto}.price{font-weight:800;color:var(--green)}.add{border:0;border-radius:10px;background:var(--green);color:white;font-weight:750;padding:10px 13px}.add:hover,.primary:hover{background:#244437}
+.notice{background:#f4ead9;border-radius:14px;padding:14px 16px;color:#6a5137;font-size:13px;line-height:1.5;margin:22px 0}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 0 28px}
+.cart-fab{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:min(500px,calc(100% - 28px));display:flex;justify-content:space-between;align-items:center;background:var(--green);color:white;padding:14px 17px;border-radius:16px;box-shadow:0 12px 35px #203c2e35;border:0;z-index:5;font-weight:800}
+.cart-fab small{font-weight:500;color:#dce8df}.cart-count{background:#fff;color:var(--green);border-radius:999px;padding:4px 8px;margin-right:7px}
+.overlay{position:fixed;inset:0;background:#13251dcc;z-index:10;display:none;align-items:end;justify-content:center;padding:0}.overlay.open{display:flex}
+.sheet{background:var(--paper);width:min(620px,100%);max-height:92vh;overflow:auto;border-radius:24px 24px 0 0;padding:22px 18px 26px}
+.sheet-head{display:flex;justify-content:space-between;align-items:center}.sheet h2{font: bold 28px Georgia,serif;margin:0}.close{border:0;background:#f0ece3;border-radius:50%;width:38px;height:38px;font-size:20px}
+.cart-lines{margin:16px 0}.cart-line{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.line-title{font-weight:750}.line-sub{font-size:12px;color:var(--muted);margin-top:4px}.qty{display:flex;align-items:center;gap:10px}.qty button{border:1px solid var(--line);background:white;border-radius:8px;width:30px;height:30px}
+.total{display:flex;justify-content:space-between;font-weight:850;font-size:18px;padding:12px 0 18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);margin-bottom:12px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:white;padding:12px;color:var(--ink);outline-color:var(--green)}
+.field.full{grid-column:1/-1}.primary{width:100%;border:0;border-radius:12px;padding:14px;background:var(--green);color:white;font-weight:800}.empty{text-align:center;color:var(--muted);padding:26px 0}.hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:10px}
+@media(max-width:720px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.item-art{height:125px;font-size:55px}.item-info{padding:12px}.item h3{font-size:14px}.desc{font-size:11px}.add{padding:9px 10px}.section-title h2{font-size:25px}}
+@media(max-width:390px){.grid{grid-template-columns:1fr 1fr}.item-art{height:108px}.item-info{padding:10px}.item-foot{align-items:flex-start;flex-direction:column}.add{width:100%}.form-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="hero">
+ <div class="wrap">
+  <div class="top"><div class="brand">NUMWHAN SWEET CAFÉ</div><button class="lang" id="langBtn" type="button">ไทย / EN</button></div>
+  <h1 id="heroTitle">A little sweetness<br>in every sip.</h1>
+  <p id="heroSub">Freshly made drinks, your way. Explore our menu and place a pickup order in just a few taps.</p>
+  <div class="hero-bottom"><span class="pill">☕ Made to order</span><span class="pill">🧊 Choose your ice & sweetness</span><span class="pill">♡ Made with care</span></div>
+ </div>
+</header>
+<main class="wrap">
+ <div class="toolbar"><input id="search" class="search" placeholder="Search drinks..." aria-label="Search drinks"><span id="itemCount" style="font-size:13px;color:var(--muted)">Menu</span></div>
+ <nav id="categories" class="categories" aria-label="Menu categories"></nav>
+ <div class="section-title"><h2 id="menuTitle">Our menu</h2><span id="menuCaption">Find your new favourite</span></div>
+ <div id="menu" class="grid"></div>
+ <div class="notice"><strong>Before launch:</strong> Sample prices, drink descriptions and emoji illustrations are placeholders. Update them to match your real menu. Orders are prepared as a message for the customer to send; this starter app does not yet store orders or process payments.</div>
+ <footer>NUMWHAN SWEET CAFÉ · Made with care</footer>
+</main>
+<button class="cart-fab" id="openCart" type="button"><span><span class="cart-count" id="cartCount">0</span><span id="cartLabel">Your order</span><br><small id="cartSub">Review items and checkout</small></span><span id="cartTotal">฿0</span></button>
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+ <section class="sheet">
+  <div class="sheet-head"><h2 id="cartTitle">Your order</h2><button class="close" id="closeCart" aria-label="Close">×</button></div>
+  <div id="cartLines" class="cart-lines"></div>
+  <div class="total"><span id="totalLabel">Total</span><span id="sheetTotal">฿0</span></div>
+  <form id="checkout">
+   <div class="form-grid">
+    <label class="field"><span id="nameLabel">Your name *</span><input name="customer" required placeholder="Name"></label>
+    <label class="field"><span id="phoneLabel">Phone / LINE ID</span><input name="contact" placeholder="How can we contact you?"></label>
+    <label class="field"><span id="fulfilLabel">Order type</span><select name="fulfil"><option value="Pickup">Pickup / รับเอง</option><option value="Delivery">Delivery / จัดส่ง (confirm with café)</option></select></label>
+    <label class="field"><span id="timeLabel">Pickup time</span><input name="time" placeholder="e.g. 10:30"></label>
+    <label class="field"><span id="sugarLabel">Sweetness</span><select name="sugar"><option>Normal</option><option>100%</option><option>75%</option><option>50%</option><option>25%</option><option>0%</option></select></label>
+    <label class="field"><span id="iceLabel">Ice</span><select name="ice"><option>Normal ice</option><option>Less ice</option><option>Extra ice</option><option>No ice</option></select></label>
+    <label class="field full"><span id="notesLabel">Notes / special requests</span><textarea name="notes" rows="2" placeholder="Anything we should know?"></textarea></label>
+   </div>
+   <button class="primary" id="submitOrder" type="submit">Prepare order message</button>
+   <p class="hint" id="orderHint">This opens a message you can copy or send. The café must confirm the order and payment separately.</p>
+  </form>
+ </section>
+</div>
+<script>
+const products = [
+ {id:1,name:"Freddo",th:"เฟรดโด",category:"Coffee",emoji:"🧋",price:55,desc:"A cool, smooth coffee pick-me-up",tag:"Popular"},
+ {id:2,name:"Iced Americano",th:"อเมริกาโน่เย็น",category:"Coffee",emoji:"🧊",price:50,desc:"Bold espresso over ice"},
+ {id:3,name:"Honey Lemon Americano",th:"อเมริกาโน่น้ำผึ้งมะนาว",category:"Coffee",emoji:"🍋",price:60,desc:"Coffee with bright honey-lemon notes"},
+ {id:4,name:"Coconut Matcha Foam",th:"มัทฉะโฟมนมมะพร้าว",category:"Tea & Matcha",emoji:"🍵",price:65,desc:"Matcha with a creamy coconut finish",tag:"Special"},
+ {id:5,name:"Iced Black Tea",th:"ชาดำเย็น",category:"Tea & Matcha",emoji:"🫖",price:40,desc:"Classic, rich Thai-style black tea"},
+ {id:6,name:"Lemon Tea",th:"ชามะนาว",category:"Tea & Matcha",emoji:"🍋",price:45,desc:"Refreshing tea with a citrus lift"},
+ {id:7,name:"Thai Milk Tea",th:"ชาไทย",category:"Tea & Matcha",emoji:"🥤",price:45,desc:"Creamy and fragrant Thai tea"},
+ {id:8,name:"Cocoa",th:"โกโก้",category:"Other",emoji:"🍫",price:50,desc:"Chocolatey comfort, served chilled"},
+ {id:9,name:"Khanom Mo Kaeng",th:"ขนมหม้อแกง",category:"Sweets",emoji:"🍮",price:45,desc:"Traditional Thai dessert cooked over charcoal",tag:"Signature"}
+];
+const categories = ["All","Coffee","Tea & Matcha","Other","Sweets"];
+let selected = "All", cart = {}, lang = "en";
+const $ = s => document.querySelector(s);
+const baht = n => "฿"+Number(n).toLocaleString("en-US");
+function displayName(p){return lang==="th"?(p.th||p.name):p.name}
+function categoryLabel(c){if(lang==="en")return c;return ({"All":"ทั้งหมด","Coffee":"กาแฟ","Tea & Matcha":"ชาและมัทฉะ","Other":"อื่น ๆ","Sweets":"ขนมหวาน"})[c]||c}
+function renderCategories(){
+ $("#categories").innerHTML=categories.map(c=>`<button class="cat ${selected===c?"active":""}" data-cat="${c}">${categoryLabel(c)}</button>`).join("");
+ $("#categories").querySelectorAll("button").forEach(b=>b.onclick=()=>{selected=b.dataset.cat;renderCategories();renderMenu()});
+}
+function renderMenu(){
+ const q=$("#search").value.trim().toLowerCase();
+ const list=products.filter(p=>(selected==="All"||p.category===selected)&&(`${p.name} ${p.th} ${p.desc} ${p.category}`).toLowerCase().includes(q));
+ $("#itemCount").textContent=lang==="th"?`${list.length} รายการ`:`${list.length} items`;
+ $("#menu").innerHTML=list.map(p=>`<article class="item"><div class="item-art"><span>${p.emoji}</span>${p.tag?`<span class="tag">${lang==="th"?(p.tag==="Popular"?"ขายดี":"เมนูแนะนำ"):p.tag}</span>`:""}</div><div class="item-info"><h3>${displayName(p)}</h3><div class="desc">${lang==="th"?"เลือกความหวานและน้ำแข็งได้":p.desc}</div><div class="item-foot"><span class="price">${baht(p.price)}</span><button class="add" data-add="${p.id}">${lang==="th"?"＋ เพิ่ม":"＋ Add"}</button></div></div></article>`).join("");
+ $("#menu").querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{const id=Number(b.dataset.add);cart[id]=(cart[id]||0)+1;updateCart();});
+}
+function total(){return products.reduce((s,p)=>s+p.price*(cart[p.id]||0),0)}
+function count(){return Object.values(cart).reduce((a,b)=>a+b,0)}
+function updateCart(){
+ $("#cartCount").textContent=count();$("#cartTotal").textContent=baht(total());$("#sheetTotal").textContent=baht(total());
+ $("#cartLabel").textContent=lang==="th"?"รายการของคุณ":"Your order";
+ $("#cartSub").textContent=lang==="th"?"ตรวจสอบรายการและสั่งซื้อ":"Review items and checkout";
+ const lines=products.filter(p=>cart[p.id]);
+ $("#cartLines").innerHTML=lines.length?lines.map(p=>`<div class="cart-line"><div><div class="line-title">${displayName(p)}</div><div class="line-sub">${baht(p.price)} each</div></div><div class="qty"><button type="button" data-minus="${p.id}" aria-label="Remove one">−</button><strong>${cart[p.id]}</strong><button type="button" data-plus="${p.id}" aria-label="Add one">+</button></div></div>`).join(""):`<div class="empty">${lang==="th"?"ยังไม่มีสินค้า เพิ่มเครื่องดื่มจากเมนูได้เลย":"Your cart is empty. Add something delicious from the menu."}</div>`;
+ $("#cartLines").querySelectorAll("[data-minus]").forEach(b=>b.onclick=()=>{const id=+b.dataset.minus;cart[id]--;if(cart[id]<=0)delete cart[id];updateCart()});
+ $("#cartLines").querySelectorAll("[data-plus]").forEach(b=>b.onclick=()=>{const id=+b.dataset.plus;cart[id]++;updateCart()});
+ $("#submitOrder").disabled=!count();$("#submitOrder").style.opacity=count()?1:.5;
+}
+function openCart(){$("#overlay").classList.add("open");document.body.style.overflow="hidden"}
+function closeCart(){$("#overlay").classList.remove("open");document.body.style.overflow=""}
+$("#search").addEventListener("input",renderMenu);
+$("#openCart").onclick=openCart;$("#closeCart").onclick=closeCart;
+$("#overlay").addEventListener("click",e=>{if(e.target===$("#overlay"))closeCart()});
+$("#langBtn").onclick=()=>{
+ lang=lang==="en"?"th":"en";
+ $("#heroTitle").innerHTML=lang==="th"?"หวานละมุน<br>ในทุกแก้ว":"A little sweetness<br>in every sip.";
+ $("#heroSub").textContent=lang==="th"?"เครื่องดื่มทำสดตามใจคุณ เลือกเมนูและเตรียมรายการสั่งซื้อได้ง่าย ๆ":"Freshly made drinks, your way. Explore our menu and place a pickup order in just a few taps.";
+ $("#menuTitle").textContent=lang==="th"?"เมนูของเรา":"Our menu";
+ $("#menuCaption").textContent=lang==="th"?"เลือกเมนูโปรดของคุณ":"Find your new favourite";
+ $("#cartTitle").textContent=lang==="th"?"รายการของคุณ":"Your order";
+ $("#totalLabel").textContent=lang==="th"?"รวม":"Total";
+ $("#nameLabel").textContent=lang==="th"?"ชื่อของคุณ *":"Your name *";
+ $("#phoneLabel").textContent=lang==="th"?"เบอร์โทร / LINE ID":"Phone / LINE ID";
+ $("#fulfilLabel").textContent=lang==="th"?"ประเภทการรับ":"Order type";
+ $("#timeLabel").textContent=lang==="th"?"เวลารับสินค้า":"Pickup time";
+ $("#sugarLabel").textContent=lang==="th"?"ระดับความหวาน":"Sweetness";
+ $("#iceLabel").textContent=lang==="th"?"น้ำแข็ง":"Ice";
+ $("#notesLabel").textContent=lang==="th"?"หมายเหตุ / คำขอพิเศษ":"Notes / special requests";
+ $("#submitOrder").textContent=lang==="th"?"เตรียมข้อความสั่งซื้อ":"Prepare order message";
+ $("#orderHint").textContent=lang==="th"?"ระบบจะเตรียมข้อความให้คุณคัดลอกหรือส่ง ร้านต้องยืนยันออเดอร์และการชำระเงินอีกครั้ง":"This opens a message you can copy or send. The café must confirm the order and payment separately.";
+ renderCategories();renderMenu();updateCart();
+};
+$("#checkout").addEventListener("submit",e=>{
+ e.preventDefault();if(!count())return;
+ const f=new FormData(e.target);
+ const items=products.filter(p=>cart[p.id]).map(p=>`- ${displayName(p)} x${cart[p.id]} = ${baht(p.price*cart[p.id])}`).join("\n");
+ const message=`NUMWHAN SWEET CAFÉ — ORDER\nName: ${f.get("customer")}\nContact: ${f.get("contact")||"Not provided"}\nOrder type: ${f.get("fulfil")}\nPickup time: ${f.get("time")||"To confirm"}\nSweetness: ${f.get("sugar")}\nIce: ${f.get("ice")}\n\n${items}\n\nTOTAL: ${baht(total())}\nNotes: ${f.get("notes")||"None"}\n\nPlease confirm availability and payment method.`;
+ const url="https://line.me/R/msg/text/?"+encodeURIComponent(message);
+ const win=window.open(url,"_blank","noopener");
+ if(!win){const w=window.open("","_blank");if(w){w.document.write(`<pre style="white-space:pre-wrap;font:16px system-ui;padding:20px">${message.replace(/&/g,"&amp;").replace(/</g,"&lt;")}</pre>`)}else{alert("Your order message:\n\n"+message)}}
+});
+renderCategories();renderMenu();updateCart();
+</script>
+</body>
+</html>
